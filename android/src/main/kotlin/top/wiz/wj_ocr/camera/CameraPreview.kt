@@ -47,16 +47,17 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
 
     private lateinit var camera: Camera
 
-
-    override fun onMeasure(widthSpec: Int, heightSpec: Int) {
-        viewWidth = MeasureSpec.getSize(widthSpec)
-        viewHeight = MeasureSpec.getSize(heightSpec)
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        viewWidth = MeasureSpec.getSize(widthMeasureSpec)
+        viewHeight = MeasureSpec.getSize(heightMeasureSpec)
         super.onMeasure(
                 MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY))
     }
 
-    override fun onAutoFocus(p0: Boolean, p1: Camera?) {}
+    override fun onAutoFocus(success: Boolean, camera: Camera?) {
+
+    }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
         camera = CameraUtil.getCameraInstance()
@@ -89,7 +90,7 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
         camera.parameters = p
     }
 
-    override fun surfaceChanged(p0: SurfaceHolder?, p1: Int, p2: Int, p3: Int) {
+    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         camera.stopPreview()
         updateCameraParameters()
         camera.setPreviewDisplay(holder)
@@ -97,15 +98,15 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
         setFocus()
     }
 
-    override fun surfaceDestroyed(p0: SurfaceHolder?) {
+    override fun surfaceDestroyed(holder: SurfaceHolder?) {
         camera.release()
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, p1: Int) {
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
 
     }
 
-    override fun onSensorChanged(sensorEvent: SensorEvent?) {
+    override fun onSensorChanged(event: SensorEvent?) {
 
     }
 
@@ -176,6 +177,4 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
             }
         }
     }
-
-
 }
