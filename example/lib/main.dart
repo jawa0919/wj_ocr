@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:wj_ocr/wj_ocr.dart';
 
+import 'permission_util.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -15,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  String _ocrCode = 'Unknown';
 
   @override
   void initState() {
@@ -50,7 +53,20 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            children: [
+              Text('Running on: $_platformVersion\n'),
+              FlatButton(
+                onPressed: () async {
+                  await PermissionUtil.camera();
+                  _ocrCode = await WjOcr.startTessOcr();
+                  setState(() {});
+                },
+                child: Text("startTessOcr"),
+              ),
+              Text("ocrCode: \n $_ocrCode\n")
+            ],
+          ),
         ),
       ),
     );
