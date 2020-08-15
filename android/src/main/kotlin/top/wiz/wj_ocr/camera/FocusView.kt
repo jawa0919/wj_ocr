@@ -49,8 +49,8 @@ class FocusView : View {
     private var isFocusing = false
 
     fun beginFocus() {
-        isFocusing = true;
-        if (animSet.isRunning!!) {
+        isFocusing = true
+        if (animSet.isRunning) {
             animSet.cancel()
         }
         if (fadeInOut.isRunning) {
@@ -73,7 +73,7 @@ class FocusView : View {
             override fun onAnimationRepeat(p0: Animator?) {}
             override fun onAnimationCancel(p0: Animator?) {}
             override fun onAnimationStart(p0: Animator?) {
-                this@FocusView.alpha = 1f;
+                this@FocusView.alpha = 1f
             }
 
             override fun onAnimationEnd(p0: Animator?) {

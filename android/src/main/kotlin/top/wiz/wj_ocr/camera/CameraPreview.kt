@@ -5,6 +5,9 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.hardware.Camera
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -15,7 +18,8 @@ import top.wiz.wj_ocr.util.CameraUtil
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallback {
+class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallback,
+        SensorEventListener {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -57,17 +61,17 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
     override fun surfaceCreated(holder: SurfaceHolder?) {
         camera = CameraUtil.getCameraInstance()
         camera.setPreviewDisplay(holder)
-        updateCameraParameters();
+        updateCameraParameters()
     }
 
     private fun updateCameraParameters() {
         val degrees: Int = CameraUtil.displayOrientation(context as Activity, Camera.CameraInfo.CAMERA_FACING_BACK)
-        camera.setDisplayOrientation(degrees);
+        camera.setDisplayOrientation(degrees)
         val p = camera.parameters
 
         p.setGpsTimestamp(Date().time)
-        p.pictureFormat = PixelFormat.JPEG;
-        p.focusMode = Camera.Parameters.FOCUS_MODE_AUTO;
+        p.pictureFormat = PixelFormat.JPEG
+        p.focusMode = Camera.Parameters.FOCUS_MODE_AUTO
 
         val displayMetrics = context.resources.displayMetrics
         val w = displayMetrics.widthPixels.toDouble()
@@ -77,10 +81,10 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
         p.setPreviewSize(previewSize.width, previewSize.height)
 
         val pictureSize: Camera.Size = CameraUtil.fixSize(context, p.supportedPictureSizes, w, h)
-        p.setPictureSize(pictureSize.width, pictureSize.height);
+        p.setPictureSize(pictureSize.width, pictureSize.height)
 
-//        val rotation = CameraUtil.pictureRotation(context as Activity, Camera.CameraInfo.CAMERA_FACING_BACK);
-//        p.setRotation(rotation);
+//        val rotation = CameraUtil.pictureRotation(context as Activity, Camera.CameraInfo.CAMERA_FACING_BACK)
+//        p.setRotation(rotation)
 
         camera.parameters = p
     }
@@ -94,7 +98,15 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
     }
 
     override fun surfaceDestroyed(p0: SurfaceHolder?) {
-        camera.release();
+        camera.release()
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, p1: Int) {
+
+    }
+
+    override fun onSensorChanged(sensorEvent: SensorEvent?) {
+
     }
 
     private var mFocusView: FocusView? = null
@@ -164,4 +176,6 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
             }
         }
     }
+
+
 }

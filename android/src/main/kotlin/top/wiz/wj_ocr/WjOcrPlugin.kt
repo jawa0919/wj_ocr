@@ -22,7 +22,7 @@ class WjOcrPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "wj_ocr")
-        channel.setMethodCallHandler(this);
+        channel.setMethodCallHandler(this)
     }
 
     companion object {
@@ -44,7 +44,7 @@ class WjOcrPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         } else if (call.method == "startTessOcr") {
             val language: String = call.argument("language") ?: "eng"
             Log.d(TAG, "onMethodCall: language：$language")
-            ocrResult = result;
+            ocrResult = result
             val intent = Intent(activity, TessActivity::class.java)
             intent.putExtra("language", language)
             activity.startActivity(intent)
@@ -54,26 +54,26 @@ class WjOcrPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPluginBinding) {
-        Log.d(TAG, "onDetachedFromEngine: ");
+        Log.d(TAG, "onDetachedFromEngine: ")
         channel.setMethodCallHandler(null)
     }
 
     override fun onDetachedFromActivity() {
-        Log.d(TAG, "onDetachedFromActivity: ");
+        Log.d(TAG, "onDetachedFromActivity: ")
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        Log.d(TAG, "onReattachedToActivityForConfigChanges: ");
-        onAttachedToActivity(binding);
+        Log.d(TAG, "onReattachedToActivityForConfigChanges: ")
+        onAttachedToActivity(binding)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        Log.d(TAG, "onAttachedToActivity: ");
-        activity = binding.activity;
+        Log.d(TAG, "onAttachedToActivity: ")
+        activity = binding.activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        Log.d(TAG, "onDetachedFromActivityForConfigChanges: ");
-        onDetachedFromActivity();
+        Log.d(TAG, "onDetachedFromActivityForConfigChanges: ")
+        onDetachedFromActivity()
     }
 }

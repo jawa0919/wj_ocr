@@ -84,11 +84,11 @@ class CameraUtil {
                 val ratio = size.width.toDouble() / size.height
                 //若大于了阈值，则继续筛选
                 if (abs(ratio - targetRatio) > ASPECT_TOLERANCE) {
-                    continue;
+                    continue
                 }
                 if (abs(size.height - targetHeight) < minDiff) {
-                    optimalSize = size;
-                    minDiff = Math.abs(size.height - targetHeight);
+                    optimalSize = size
+                    minDiff = Math.abs(size.height - targetHeight)
                 }
             }
             //若通过比例没有获得最优，则通过最小差值获取最优，保证至少能得到值
@@ -101,7 +101,7 @@ class CameraUtil {
                     }
                 }
             }
-            return optimalSize!!;
+            return optimalSize!!
         }
 
         // 图片旋转
