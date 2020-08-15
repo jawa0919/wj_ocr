@@ -17,8 +17,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 /** WjOcrPlugin */
 class WjOcrPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
-    val TAG = "WjOcrPlugin"
-
     private lateinit var activity: Activity
     private lateinit var channel: MethodChannel
 
@@ -28,6 +26,7 @@ class WjOcrPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     companion object {
+        val TAG = "WjOcrPlugin"
         lateinit var ocrResult: Result
 
         @JvmStatic

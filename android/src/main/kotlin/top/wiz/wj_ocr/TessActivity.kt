@@ -8,13 +8,16 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.googlecode.tesseract.android.TessBaseAPI
+import top.wiz.wj_ocr.WjOcrPlugin.Companion.TAG
+import top.wiz.wj_ocr.util.ImageUtil
 import java.io.File
 
 class TessActivity : Activity() {
-    val TAG = "TessActivity"
 
     private val tessDirName: String = "tessdata"
-//    private val api: TessBaseAPI = TessBaseAPI()
+    private val api: TessBaseAPI = TessBaseAPI()
+    private var isTess: Boolean = false;
 
     private lateinit var tessDataFile: File
     private lateinit var language: String;
@@ -22,9 +25,27 @@ class TessActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         language = intent.getStringExtra("language");
-        val tessDataDir = File(externalCacheDir, tessDirName)
+        val tessDataDir = File(getExternalFilesDir(""), tessDirName)
         tessDataFile = File(tessDataDir, "${language}.traineddata")
         Log.d(TAG, "onCreate: " + tessDataFile.path)
+        if (tessDataFile.exists()) {
+            isTess = api.init(tessDataDir.parent, language)
+            api.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO;
+        } else {
+            Thread(Runnable {
+                Log.d(TAG, "Runnable: ${System.currentTimeMillis()}")
+                val copeAssets = ImageUtil.copeAssets(this, tessDirName, tessDataDir.parent)
+                Log.d(TAG, "Runnable: $copeAssets")
+                Log.d(TAG, "Runnable: ${System.currentTimeMillis()}")
+                if (copeAssets) {
+                    isTess = api.init(tessDataDir.parent, language)
+                    api.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO;
+                } else {
+                    WjOcrPlugin.ocrResult.error("拷贝文件失败", null, null)
+                    finish()
+                }
+            }).start()
+        }
         permissionResult()
     }
 
@@ -53,5 +74,4 @@ class TessActivity : Activity() {
             }
         }
     }
-
 }
