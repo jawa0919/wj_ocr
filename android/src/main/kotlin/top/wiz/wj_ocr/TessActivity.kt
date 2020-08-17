@@ -12,13 +12,16 @@ import android.hardware.Camera
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.edmodo.cropper.CropImageView
 import com.googlecode.tesseract.android.TessBaseAPI
 import top.wiz.wj_ocr.WjOcrPlugin.Companion.TAG
 import top.wiz.wj_ocr.camera.CameraPreview
@@ -35,7 +38,10 @@ class TessActivity : Activity(), Camera.PictureCallback {
     private lateinit var tessDataFile: File
     private lateinit var language: String
 
+    private var cameraLayout: RelativeLayout? = null
+    private var cropLayout: RelativeLayout? = null
     private var cameraPreview: CameraPreview? = null
+    private var cropImageView: CropImageView? = null
 
     private var source: String? = null
     private var dialog: ProgressDialog? = null
@@ -100,6 +106,7 @@ class TessActivity : Activity(), Camera.PictureCallback {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.tess_act)
 
+        cameraLayout = findViewById(R.id.take_layout)
         cameraPreview = findViewById(R.id.cameraPreview)
         cameraPreview?.setFocusView(findViewById(R.id.focusView))
 
@@ -118,6 +125,18 @@ class TessActivity : Activity(), Camera.PictureCallback {
             intent.action = Intent.ACTION_GET_CONTENT
             startActivityForResult(intent, REQUEST_ALBUM)
         }
+
+        cropLayout = findViewById(R.id.cropper_layout)
+        cropImageView = findViewById(R.id.cropImageView)
+        cropImageView?.setGuidelines(2)
+
+        findViewById<ImageView>(R.id.btn_crop_close).setOnClickListener {
+            cameraLayout?.visibility = View.VISIBLE
+            cropLayout?.visibility = View.GONE
+        }
+        findViewById<ImageView>(R.id.btn_crop_check).setOnClickListener {
+            cropImageView?.croppedImage?.let { bitmapSaveImageAndStart(it) }
+        }
     }
 
     val REQUEST_ALBUM = 2001
@@ -126,21 +145,27 @@ class TessActivity : Activity(), Camera.PictureCallback {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == REQUEST_ALBUM) {
             Log.d(TAG, "onActivityResult: ")
+
             data?.data?.let {
-                source = ImageUtil.url2path(this, it)
-                Log.d(TAG, "onActivityResult: $source")
-                dialog = ProgressDialog(this)
-                dialog?.setMessage("正在识别...")
-                dialog?.setCancelable(false)
-                dialog?.show()
-                Thread(Runnable {
-                    Log.d(TAG, "Thread Runnable: 字典$tessDataFile 图片$source")
-                    val bitmap = BitmapFactory.decodeFile(source)
-                    Log.d(TAG, "Thread Runnable: bitmap ${bitmap.width}*${bitmap.height}")
-                    val grayBitmap = ImageUtil.convertGray(bitmap)
-                    Log.d(TAG, "Thread Runnable: grayBitmap ${grayBitmap.width}*${grayBitmap.height}")
-                    startTessThread(grayBitmap)
-                }).start()
+                val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(it))
+                cropImageView?.setImageBitmap(bitmap)
+                cameraLayout?.visibility = View.GONE
+                cameraPreview?.stop()
+                cropLayout?.visibility = View.VISIBLE
+//                source = ImageUtil.url2path(this, it)
+//                Log.d(TAG, "onActivityResult: $source")
+//                dialog = ProgressDialog(this)
+//                dialog?.setMessage("正在识别...")
+//                dialog?.setCancelable(false)
+//                dialog?.show()
+//                Thread(Runnable {
+//                    Log.d(TAG, "Thread Runnable: 字典$tessDataFile 图片$source")
+//                    val bitmap = BitmapFactory.decodeFile(source)
+//                    Log.d(TAG, "Thread Runnable: bitmap ${bitmap.width}*${bitmap.height}")
+//                    val grayBitmap = ImageUtil.convertGray(bitmap)
+//                    Log.d(TAG, "Thread Runnable: grayBitmap ${grayBitmap.width}*${grayBitmap.height}")
+//                    startTessThread(grayBitmap)
+//                }).start()
             }
         }
     }
@@ -149,14 +174,44 @@ class TessActivity : Activity(), Camera.PictureCallback {
         camera.release()
         Log.d(TAG, "onPictureTaken: ")
         val taken: Bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-        val width: Int = taken.width
-        val height: Int = taken.height
+
+        cropImageView?.setImageBitmap(taken)
+        cameraLayout?.visibility = View.GONE
+        cropLayout?.visibility = View.VISIBLE
+
+//        val width: Int = taken.width
+//        val height: Int = taken.height
+//        Log.d(TAG, "Bitmap: $width*$height")
+//        val dateTaken = System.currentTimeMillis()
+//        val fileName: String = DateFormat.format("yyyyMMdd_kkmmss", dateTaken).toString() + ".jpg"
+//        val fileDir = "$externalCacheDir/"
+//        source = ImageUtil.insertImage(contentResolver, taken, fileName, fileDir, true)
+//        taken.recycle()
+//        Log.d(TAG, "onPictureTaken: $source")
+//        dialog = ProgressDialog(this)
+//        dialog?.setMessage("正在识别...")
+//        dialog?.setCancelable(false)
+//        dialog?.show()
+//        Thread(Runnable {
+//            Log.d(TAG, "Thread Runnable: 字典$tessDataFile 图片$source")
+//            val bitmap = BitmapFactory.decodeFile(source)
+//            Log.d(TAG, "Thread Runnable: bitmap ${bitmap.width}*${bitmap.height}")
+//            val grayBitmap = ImageUtil.convertGray(bitmap)
+//            Log.d(TAG, "Thread Runnable: grayBitmap ${grayBitmap.width}*${grayBitmap.height}")
+//            startTessThread(grayBitmap)
+//        }).start()
+    }
+
+    private fun bitmapSaveImageAndStart(croppedImage: Bitmap) {
+        Log.d(TAG, "bitmapSaveImageAndStart: ")
+        val width: Int = croppedImage.width
+        val height: Int = croppedImage.height
         Log.d(TAG, "Bitmap: $width*$height")
         val dateTaken = System.currentTimeMillis()
         val fileName: String = DateFormat.format("yyyyMMdd_kkmmss", dateTaken).toString() + ".jpg"
         val fileDir = "$externalCacheDir/"
-        source = ImageUtil.insertImage(contentResolver, taken, fileName, fileDir, true)
-        taken.recycle()
+        source = ImageUtil.insertImage(contentResolver, croppedImage, fileName, fileDir, true)
+        croppedImage.recycle()
         Log.d(TAG, "onPictureTaken: $source")
         dialog = ProgressDialog(this)
         dialog?.setMessage("正在识别...")

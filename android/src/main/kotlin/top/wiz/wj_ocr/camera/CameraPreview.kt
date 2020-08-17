@@ -26,7 +26,6 @@ class CameraPreview : SurfaceView, SurfaceHolder.Callback, Camera.AutoFocusCallb
 
     init {
         holder.addCallback(this)
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
         setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 mFocusView?.let {

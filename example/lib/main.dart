@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
               Text('Running on: $_platformVersion\n'),
               FlatButton(
                 onPressed: () async {
-                  await PermissionUtil.camera();
+                  await PermissionUtil.cameraPermissionRequest();
                   _ocrCode = await WjOcr.startTessOcr();
                   setState(() {});
                 },
