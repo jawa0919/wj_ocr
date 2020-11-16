@@ -6,6 +6,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://www.jitpack.io' }
     }
 
     dependencies {
@@ -18,6 +19,7 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://www.jitpack.io' }
     }
 }
 
@@ -40,6 +42,7 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.rmtheis:tess-two:9.1.0'
+  //  implementation 'com.rmtheis:tess-two:9.1.0'
+    implementation 'com.github.jawa0919:tess-two:9.2.0'
     implementation 'com.edmodo:cropper:2.0.0'
 }
