@@ -34,7 +34,8 @@
             android:gravity="center"
             android:lineSpacingMultiplier="2.0"
             android:text="请横屏拍照\n题目文字尽量与参考线对齐"
-            android:textColor="#D3D3D3" />
+            android:textColor="#D3D3D3"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:layout_width="match_parent"
