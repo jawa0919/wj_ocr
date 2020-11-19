@@ -28,9 +28,7 @@ import top.wiz.wj_ocr.camera.CameraPreview
 import top.wiz.wj_ocr.util.ImageUtil
 import java.io.File
 
-
 class TessActivity : Activity(), Camera.PictureCallback {
-
     private val tessDirName: String = "tessdata"
     private val api: TessBaseAPI = TessBaseAPI()
     private var isTess: Boolean = false

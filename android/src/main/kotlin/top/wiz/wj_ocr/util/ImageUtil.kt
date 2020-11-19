@@ -1,6 +1,5 @@
 package top.wiz.wj_ocr.util
 
-import android.R
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.*
@@ -13,10 +12,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-
 class ImageUtil {
     companion object {
-
         // 加载资源文件夹
         fun copeAssets(context: Context, assetsDirName: String, copyDirPath: String): Boolean {
             val assetsList = context.assets.list(assetsDirName) ?: arrayOf()
